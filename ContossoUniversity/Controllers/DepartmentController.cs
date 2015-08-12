@@ -32,7 +32,16 @@ namespace ContossoUniversity.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Department department = await db.Departments.FindAsync(id);
+
+
+
+            // Commenting out original code to show how to use a raw SQL query. //Department department = await db.Departments.FindAsync(id);
+            // Create and execute raw SQL query. 
+            string query = "SELECT * FROM Department WHERE DepartmentID = @p0"; Department department = await db.Departments.SqlQuery(query, id).SingleOrDefaultAsync();
+
+
+
+
             if (department == null)
             {
                 return HttpNotFound();
@@ -109,11 +118,14 @@ Department department)
         {
             try
             {
+
+
                 if (ModelState.IsValid)
                 {
-                    db.Entry(department).State = EntityState.Modified;
-                    await db.SaveChangesAsync();
-                    return RedirectToAction("Index");
+                    //db.Entry(department).State = EntityState.Modified;
+                    //await db.SaveChangesAsync();
+                    //return RedirectToAction("Index");
+                     ValidateOneAdministratorAssignmentPerInstructor(department); 
                 }
             }
             catch (DbUpdateConcurrencyException ex)
@@ -218,6 +230,45 @@ Department department)
                 return View(department);
             }
         }
+
+
+
+
+
+        private void ValidateOneAdministratorAssignmentPerInstructor(Department department)
+        {
+            if (department.InstructorID != null)
+            {
+                Department duplicateDepartment = db.Departments
+                .Include("Administrator")
+                .Where(d => d.InstructorID == department.InstructorID)
+                .AsNoTracking()
+                .FirstOrDefault();
+
+                if (duplicateDepartment != null && duplicateDepartment.DepartmentID != department.DepartmentID)
+                {
+                    string errorMessage = String.Format(
+                    "Instructor {0} {1} is already administrator of the {2} department.",
+                    duplicateDepartment.Administrator.FirstMidName,
+                    duplicateDepartment.Administrator.LastName,
+                    duplicateDepartment.Name);
+                    ModelState.AddModelError(string.Empty, errorMessage);
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 

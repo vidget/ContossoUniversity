@@ -7,7 +7,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Data.Entity.Infrastructure.Interception;
 using ContossoUniversity.DAL;
-using ContosoUniversity.DAL;
+using ContossoUniversity.DAL;
 
 namespace ContossoUniversity
 {

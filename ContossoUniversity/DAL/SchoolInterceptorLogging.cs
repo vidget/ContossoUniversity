@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Linq;
 using ContossoUniversity.Logging; 
-namespace ContosoUniversity.DAL 
+namespace ContossoUniversity.DAL  
 {
 public class SchoolInterceptorLogging : DbCommandInterceptor
 {
